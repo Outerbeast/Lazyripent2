@@ -109,7 +109,7 @@ public static partial class Options
 	/// Will enable TemporaryUnattendedMode if "always" is chosen.
 	/// </summary>
 	/// <param name="promptMessage">Message shown</param>
-	/// <param name="options">Options presented</param>
+	/// <param name="options">MenuItems presented</param>
 	/// <param name="defaultOption">Default choice when enter is hit</param>
 	/// <returns>True if allowed by user, or if either UnattendedMode or TemporaryUnattendedMode are enabled</returns>
 	/// <exception cref="NotImplementedException"></exception>
@@ -400,4 +400,16 @@ public static partial class Options
 			Console.WriteLine($"{primary,-6}  or {secondary,-20}  {bind.Description}");
 		}
 	}
+
+    /// <summary>
+    /// Outerbeast: clears state, should be called before processing each new command line 
+	/// in case of multiple command lines being processed in the same application instance.
+    /// This is to prevent state from previous command lines interfering with the current one.
+    /// </summary>
+    public static void Reset()
+    {
+        InputFileFullPaths = OutputFileFullPaths = OutputDirectoryFullPaths = [];
+        Mode = OperationMode.None;
+        FgdFullPath = string.Empty;
+    }
 }

@@ -4,6 +4,7 @@ using Lazyripent2.Fgd;
 using Lazyripent2.Lexer;
 using Lazyripent2.Map;
 using Lazyripent2.Rule;
+using Lazyripent2.UI;
 
 namespace Lazyripent2;
 
@@ -14,6 +15,7 @@ public class Program
 
     public static int Main(string[] args)
     {
+        Console.Title = "Lazyripent";
         Console.WriteLine("Lazyripent 2.0.0");
         try
         {
@@ -40,8 +42,22 @@ public class Program
                 new BindOption("-v", "--verbose", "produce more verbose output", 0, arg => Options.Verbose = true),
                 new BindOption("-w", "--warnings-as-fatal", "treat all warnings as fatal and stop the program", 0, arg => Options.WarningsAsFatal = true),
             ]);
-            
-            if(args.Length == 0)
+            // Launch the menu if no arguments were provided    
+            if( args.Length == 0 )
+            {
+                try
+                {
+                    while( Menu.Display() );
+                    return (int) ExitCodes.Success;
+                }
+                catch( Exception ex )
+                {
+                    ExitCode.Failure( ex );
+                    return (int) ExitCodes.Failure;
+                }
+            }
+
+            if(args.Contains("-h") || args.Contains("--help"))
             {
                 ShowUsage();
                 return (int)ExitCodes.Success;
@@ -177,7 +193,7 @@ public class Program
         ExitCode.CheckWarningAsFatal(fileParser);
     }
 
-    private static void LoadFGD()
+    internal static void LoadFGD()
     {
         if(string.IsNullOrWhiteSpace(Options.FgdFullPath))
         {
@@ -208,7 +224,7 @@ public class Program
         Console.WriteLine($"Stripped total of {stripped} keyvalues");
     }
 
-    private static void LoadRules()
+    internal static void LoadRules()
     {
 		List<string> ruleFullPaths = Options.GetFilesOfType(Options.InputFileFullPaths, FileType.Rule);
         for(int i = 0; i <ruleFullPaths.Count; i++)
@@ -228,7 +244,7 @@ public class Program
         }
     }
 
-    private static void ExportEntsFromBspFiles()
+    internal static void ExportEntsFromBspFiles()
     {
         List<string> inputBspFullPaths = Options.GetFilesOfType(Options.InputFileFullPaths, FileType.Bsp);
         List<string> outputEntFullPaths = Options.GetFilesOfType(Options.OutputFileFullPaths, FileType.Ent);
@@ -248,7 +264,7 @@ public class Program
         }
     }
 
-    private static void ImportEntsToBspFiles()
+    internal static void ImportEntsToBspFiles()
     {
         List<string> inputEntFullPaths = Options.GetFilesOfType(Options.InputFileFullPaths, FileType.Ent);
         List<string> outputBspFullPaths = Options.GetFilesOfType(Options.OutputFileFullPaths, FileType.Bsp);
@@ -292,8 +308,8 @@ public class Program
 
         return file;
     }
-
-    private static void StripFgdFromFiles(List<string> inputFullPaths, List<string> outputFullPaths)
+    // Outerbeast: exposed this method for Menu.RunStripFgd
+    internal static void StripFgdFromFiles(List<string> inputFullPaths, List<string> outputFullPaths)
     {
         for(int i = 0; i < inputFullPaths.Count; i++)
         {
@@ -307,7 +323,7 @@ public class Program
         }
     }
 
-    private static void ApplyRulesToFiles(List<string> inputFullPaths, List<string> outputFullPaths)
+    internal static void ApplyRulesToFiles(List<string> inputFullPaths, List<string> outputFullPaths)
     {
         for(int i = 0; i < inputFullPaths.Count; i++)
         {
