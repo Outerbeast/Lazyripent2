@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0
+
+      - name: Run tests
+        run: dotnet test Lazyripent2.Tests/Lazyripent2.Tests.csproj
+
+      - name: Linux Build
+        run: |
+          dotnet publish Lazyripent2/Lazyripent2.csproj -o Build/Linux -c Release -r linux-x64 -v q
+          7z a Release/linux.7z Build/Linux/Lazyripent2
+
+      - name: Windows Build
+        run: |
+          dotnet publish Lazyripent2/Lazyripent2.csproj -o Build/Windows -c Release -r win-x64 -v q
+          7z a Release/windows.7z Build/Windows/Lazyripent2.exe
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            Release/linux.7z
+            Release/windows.7z
+          draft: true
+          generate_release_notes: true
