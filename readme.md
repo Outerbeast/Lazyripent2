@@ -1,4 +1,7 @@
 # Lazyripent 2
+
+![alt text](https://github.com/Outerbeast/Lazyripent2/blob/main/menu_preview.png?raw=true)
+
 A command line tool with a minimal TUI for mass ripenting.
 
 This tool allows you to mass edit .map, .bsp, or .ent files.
