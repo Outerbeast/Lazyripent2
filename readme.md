@@ -1,5 +1,5 @@
 # Lazyripent 2
-A command line tool for mass ripenting.
+A command line tool with a minimal TUI for mass ripenting.
 
 This tool allows you to mass edit .map, .bsp, or .ent files.
 Comes with a basic syntax to set up selectors and actions. See [Rule file syntax](#rule-file-syntax) and [Rule file cheatsheet](#rule-file-cheatsheet) sections. If you need a more advanced tool, please check out [Solokiller's MapUpgrader tool](https://github.com/twhl-community/HalfLife.UnifiedSdk-CSharp/tree/master)
@@ -12,7 +12,13 @@ angle yaw -> angles pitch=0 yaw roll=0
 Unlike Lazyripent1 this does not require any external ripent executables, and is perfectly capable of processing bsp files on its own.
 
 ## Usage
-This also prints when the application is ran without any options
+Launch the application and it will display a menu with the following options:
+1. Extract - exports .ent file(s) from a chosen BSP file or folder containing BSPs
+2. Import - imports .ent file(s) into a chosen BSP file or folder containing BSPs
+3. Rule - apply rule to a chosen BSP/ENT/MAP file or a folder containing BSP/ENT/MAP files
+4. Strip FGD - strips FGD files from BSP/ENT/MAP files
+
+You can run this via the command line with various arguments:
 ```
 Usage: lazyripent [options]
 
