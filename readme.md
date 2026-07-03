@@ -80,11 +80,18 @@ This keyword can take multiple maps separated by whitespace.
 
 Sometimes you may need to adjust spawnflags (bitflag fields) without replacing the entire value, that is to say you can clear or set bits without affecting the rest. This will require some level of understanding of how bitfields or spawnflags in goldsrc work.
 
-Bit-set and bit-clear both take in a special type of value called bit-values as indicated by `b` followed by six zeros or ones. These values are binary, and are read from right to left, rightmost being `1`, and leftmost being `32`, with a total of `63` when all bits are set to one.
+Bit-set and bit-clear both take in a special type of value called bit-values as indicated by `b` followed by zeros or ones with optional underscores for readability. These values are binary, and are read from right to left, rightmost being `1`, and leftmost being `32768`, with a total of `65535` when all bits are set to one.
+
+There are two ways to define bitfields:
+1. Full definition: `b0000000000000101`
+2. Partial definition ("lazy field"): `b101`
+
+Bitfields may have underscores for readability (such as: `b0000_0000_0000_0101`), these underscores can be placed anywhere and can be used with lazy fields.
+
 ```
 {
 	match classname monster_scientist
-	bit-clear spawnflags b000101
+	bit-clear spawnflags b101
 }
 ```
 This rule block would clear the flags "Wait till seen" and "Monster clip" from `spawnflags`
@@ -93,7 +100,7 @@ And as you would guess:
 ```
 {
 	match classname monster_scientist
-	bit-set spawnflags b000101
+	bit-set spawnflags b101
 }
 ```
 This rule block would set the flags "Wait till seen" and "Monster clip" from `spawnflags`
@@ -103,9 +110,24 @@ Also another new addition to Lazyripent2 is the ability to do basic arithmetic i
 {
 	match classname monster_scientist
 	add health 100
+	sub health 100
+	mult health 2
+	div health 2
 }
 ```
 This rule block would add 100 to the existing value of `health`
+
+Vector math is also possible:
+```
+{
+	match classname monster_scientist
+	add origin "64 128 1337"
+	sub origin "100 100 100"
+	mult origin 2
+	div origin 2
+}
+```
+Currently multiplication and division are applied to all components of the vector. It is also not possible to mix vector subtraction and addition with non-vector values.
 
 Rule blocks are executed from top to bottom, so you can abuse this to do more slightly involved operations if necessary.
 
@@ -160,8 +182,8 @@ map name ...
 	remove key
 	new key value
 	rename key key
-	bit-set key b000000
-	bit-clear key b000000
+	bit-set key bN...N (where N is either 0 or 1)
+	bit-clear key bN...N (where N is either 0 or 1)
 	add key value
 	sub key value
 	mult key value

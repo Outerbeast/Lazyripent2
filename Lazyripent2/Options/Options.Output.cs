@@ -247,14 +247,6 @@ public static partial class Options
 			default:
 				throw new NotImplementedException($"Unsupported OperationMode {Mode}");
 		}
-
-		foreach(string fullPath in bspFullPaths)
-		{
-			if(!File.Exists(fullPath))
-			{
-				throw new BadOptionException($"Output target bsp does not exist: \"{fullPath}\"");
-			}
-		}
 	}
 
 	/// <summary>

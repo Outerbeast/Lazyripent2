@@ -9,7 +9,7 @@ public enum RuleActionType
 	[RuleKeyword("rename", 2)] Rename,
 	[RuleKeyword("store", 2)] Store,
  	[RuleKeyword("remove", 1)] Remove,
-	[RuleKeyword("new-entity", 1 )] NewEntity,
+	[RuleKeyword("new-entity", 1)] NewEntity,
 	[RuleKeyword("remove-entity", 0)] RemoveEntity,
 	[RuleKeyword("add", 2)] MathAddKeyValue,
 	[RuleKeyword("sub", 2)] MathSubKeyValue,
