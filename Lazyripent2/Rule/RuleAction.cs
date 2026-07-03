@@ -167,12 +167,7 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 	/// <exception cref="NotImplementedException"></exception>
 	private string SolveForBitwise(string existingValue, RuleActionBitwiseMode bitwiseMode)
 	{
-		if(Value is null)
-		{
-			throw new RuleBlockException($"RuleActionType {Type} Value was null in rule block starting on line {_ruleBlock.Line}");
-		}
-
-		if(!Value.StartsWith('b') || Value.Length != 7)
+		if(!Value!.StartsWith('b'))
 		{
 			throw new RuleBlockException($"RuleActionType {Type} Value is not a bit value in rule block starting on line {_ruleBlock.Line}");
 		}
@@ -183,7 +178,9 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 		}
 
 		string stripValue = Value[1..];
-		for(int i = 0; i < 6; i++)
+		stripValue = stripValue.Replace("_", string.Empty);
+		int indexOffset = 16 - stripValue.Length;
+		for(int i = 0; i < stripValue.Length; i++)
 		{
 			if(stripValue[i] != '0' && stripValue[i] != '1')
 			{
@@ -198,7 +195,7 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 						continue;
 					}
 
-					existingValueAsInt |= 0x20 >> i;
+					existingValueAsInt |= 0x8000 >> (i + indexOffset);
 					break;
 
 				case RuleActionBitwiseMode.Clear:
@@ -207,7 +204,7 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 						continue;
 					}
 
-					existingValueAsInt &= ~(0x20 >> i);
+					existingValueAsInt &= ~(0x8000 >> (i + indexOffset));
 					break;
 
 				default:

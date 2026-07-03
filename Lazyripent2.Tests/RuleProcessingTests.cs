@@ -339,7 +339,7 @@ public class RuleProcessingTests
 	}
 
 	[Test]
-	public void BitSet()
+	public void BitSetSimple()
 	{
 		MapFile mapFile = new();
 		mapFile.DeserializeFromMemory(@"
@@ -353,7 +353,7 @@ public class RuleProcessingTests
 		ruleFile.DeserializeFromMemory(@"
 		{
 			match classname test_target
-			bit-set bitfield b000010
+			bit-set bitfield b10
 		}");
 
 		List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
@@ -362,7 +362,53 @@ public class RuleProcessingTests
 	}
 
 	[Test]
-	public void BitClear()
+	public void BitSetLong()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""bitfield"" ""0""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		ruleFile.DeserializeFromMemory(@"
+		{
+			match classname test_target
+			bit-set bitfield b1111111111111111
+		}");
+
+		List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+		
+		Assert.That(entities[0].GetValue("bitfield"), Is.EqualTo("65535"));
+	}
+
+	[Test]
+	public void BitSetLong2()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""bitfield"" ""0""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		ruleFile.DeserializeFromMemory(@"
+		{
+			match classname test_target
+			bit-set bitfield b1111_1111_1111_1111
+		}");
+
+		List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+		
+		Assert.That(entities[0].GetValue("bitfield"), Is.EqualTo("65535"));
+	}
+
+	[Test]
+	public void BitClearSimple()
 	{
 		MapFile mapFile = new();
 		mapFile.DeserializeFromMemory(@"
@@ -376,12 +422,58 @@ public class RuleProcessingTests
 		ruleFile.DeserializeFromMemory(@"
 		{
 			match classname test_target
-			bit-clear bitfield b000010
+			bit-clear bitfield b10
 		}");
 
 		List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
 		
 		Assert.That(entities[0].GetValue("bitfield"), Is.EqualTo("1"));
+	}
+
+	[Test]
+	public void BitClearLong()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""bitfield"" ""65535""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		ruleFile.DeserializeFromMemory(@"
+		{
+			match classname test_target
+			bit-clear bitfield b1111111111111111
+		}");
+
+		List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+		
+		Assert.That(entities[0].GetValue("bitfield"), Is.EqualTo("0"));
+	}
+
+	[Test]
+	public void BitClearLong2()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""bitfield"" ""65535""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		ruleFile.DeserializeFromMemory(@"
+		{
+			match classname test_target
+			bit-clear bitfield b1111_1111_1111_1111
+		}");
+
+		List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+		
+		Assert.That(entities[0].GetValue("bitfield"), Is.EqualTo("0"));
 	}
 
 	[Test]
