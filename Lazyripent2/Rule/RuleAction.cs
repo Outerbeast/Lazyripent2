@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Lazyripent2.Rule;
 
 public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = null, string? Value = null)
@@ -111,9 +113,39 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 				EnsureKeyIsNotNull();
 				EnsureValueIsNotNull();
 				EnsureEntityHasKey(entity, Key);
-				float value = EnsureEntityValueIsNumeric(entity, entity.GetValue(Key));
-				value += ConvertValueToNumeric(Value);
-				entity.SetKeyValue(Key, value.ToString());
+				if(ValueIsNumericVector(entity.GetValue(Key), out string[] splitVectorValue))
+				{
+					if(!ValueIsNumericVector(Value, out string[] splitVectorRuleValue))
+					{
+						throw new RuleBlockException("Can not operate vector addition between a vector and a numerical value in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					StringBuilder sb = new();
+					for(int i = 0; i < 3; i++)
+					{
+						float value = ConvertValueToNumeric(splitVectorValue[i]);
+						value += ConvertValueToNumeric(splitVectorRuleValue[i]);
+						sb.Append(value);
+						if(i < 2)
+						{
+							sb.Append(' ');
+						}
+					}
+
+					entity.SetKeyValue(Key, sb.ToString());
+				}
+				else
+				{
+					if(ValueIsNumericVector(Value, out string[] splitVectorRuleValue))
+					{
+						throw new RuleBlockException("Can not operate addition between a numerical and a vector value in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					float value = ConvertValueToNumeric(entity.GetValue(Key));
+					value += ConvertValueToNumeric(Value);
+					entity.SetKeyValue(Key, value.ToString());
+				}
+
 				break;
 			}
 
@@ -122,9 +154,39 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 				EnsureKeyIsNotNull();
 				EnsureValueIsNotNull();
 				EnsureEntityHasKey(entity, Key);
-				float value = EnsureEntityValueIsNumeric(entity, entity.GetValue(Key));
-				value -= ConvertValueToNumeric(Value);
-				entity.SetKeyValue(Key, value.ToString());
+				if(ValueIsNumericVector(entity.GetValue(Key), out string[] splitVectorValue))
+				{
+					if(!ValueIsNumericVector(Value, out string[] splitVectorRuleValue))
+					{
+						throw new RuleBlockException("Can not operate vector subtraction between a vector and a numerical value in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					StringBuilder sb = new();
+					for(int i = 0; i < 3; i++)
+					{
+						float value = ConvertValueToNumeric(splitVectorValue[i]);
+						value -= ConvertValueToNumeric(splitVectorRuleValue[i]);
+						sb.Append(value);
+						if(i < 2)
+						{
+							sb.Append(' ');
+						}
+					}
+
+					entity.SetKeyValue(Key, sb.ToString());
+				}
+				else
+				{
+					if(ValueIsNumericVector(Value, out string[] splitVectorRuleValue))
+					{
+						throw new RuleBlockException("Can not operate subtraction between a numerical and a vector value in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					float value = ConvertValueToNumeric(entity.GetValue(Key));
+					value -= ConvertValueToNumeric(Value);
+					entity.SetKeyValue(Key, value.ToString());
+				}
+
 				break;
 			}
 
@@ -133,9 +195,39 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 				EnsureKeyIsNotNull();
 				EnsureValueIsNotNull();
 				EnsureEntityHasKey(entity, Key);
-				float value = EnsureEntityValueIsNumeric(entity, entity.GetValue(Key));
-				value *= ConvertValueToNumeric(Value);
-				entity.SetKeyValue(Key, value.ToString());
+				if(ValueIsNumericVector(entity.GetValue(Key), out string[] splitVectorValue))
+				{
+					if(ValueIsNumericVector(Value, out string[] _))
+					{
+						throw new RuleBlockException("Can not operate vector multiplication between two vectors in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					StringBuilder sb = new();
+					for(int i = 0; i < 3; i++)
+					{
+						float value = ConvertValueToNumeric(splitVectorValue[i]);
+						value *= ConvertValueToNumeric(Value);
+						sb.Append(value);
+						if(i < 2)
+						{
+							sb.Append(' ');
+						}
+					}
+
+					entity.SetKeyValue(Key, sb.ToString());
+				}
+				else
+				{
+					if(ValueIsNumericVector(Value, out string[] splitVectorRuleValue))
+					{
+						throw new RuleBlockException("Can not operate multiplication between a numerical and a vector value in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					float value = ConvertValueToNumeric(entity.GetValue(Key));
+					value *= ConvertValueToNumeric(Value);
+					entity.SetKeyValue(Key, value.ToString());
+				}
+
 				break;
 			}
 
@@ -144,9 +236,39 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 				EnsureKeyIsNotNull();
 				EnsureValueIsNotNull();
 				EnsureEntityHasKey(entity, Key);
-				float value = EnsureEntityValueIsNumeric(entity, entity.GetValue(Key));
-				value /= ConvertValueToNumeric(Value);
-				entity.SetKeyValue(Key, value.ToString());
+				if(ValueIsNumericVector(entity.GetValue(Key), out string[] splitVectorValue))
+				{
+					if(ValueIsNumericVector(Value, out string[] _))
+					{
+						throw new RuleBlockException("Can not operate vector divison between two vectors in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					StringBuilder sb = new();
+					for(int i = 0; i < 3; i++)
+					{
+						float value = ConvertValueToNumeric(splitVectorValue[i]);
+						value /= ConvertValueToNumeric(Value);
+						sb.Append(value);
+						if(i < 2)
+						{
+							sb.Append(' ');
+						}
+					}
+
+					entity.SetKeyValue(Key, sb.ToString());
+				}
+				else
+				{
+					if(ValueIsNumericVector(Value, out string[] splitVectorRuleValue))
+					{
+						throw new RuleBlockException("Can not operate division between a numerical and a vector value in rule block starting on line {_ruleBlock.Line}");
+					}
+
+					float value = ConvertValueToNumeric(entity.GetValue(Key));
+					value /= ConvertValueToNumeric(Value);
+					entity.SetKeyValue(Key, value.ToString());
+				}
+
 				break;
 			}
 
@@ -270,23 +392,32 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="entity"></param>
 	/// <param name="value"></param>
+	/// <param name="splitValue"></param>
 	/// <returns></returns>
 	/// <exception cref="RuleBlockException"></exception>
-	private float EnsureEntityValueIsNumeric(Entity entity, string value)
+	private bool ValueIsNumericVector(string value, out string[] splitValue)
 	{
-		if(float.TryParse(value, out float floatValue))
+		splitValue = value.Split(" ");
+		if(splitValue.Length != 3)
 		{
-			return floatValue;
+			return false;
 		}
 
-		if(int.TryParse(value, out int intValue))
+		//early catch so we can have a nicer error message
+		for(int i = 0; i < 3; i++)
 		{
-			return intValue;
+			try
+			{
+				ConvertValueToNumeric(splitValue[i]);
+			}
+			catch(RuleBlockException)
+			{
+				throw new RuleBlockException($"Value \"{value}\" is not a valid numerical vector (either math operation or entity value) for matched entity in rule block starting on line {_ruleBlock.Line}");
+			}
 		}
 
-		throw new RuleBlockException($"Value \"{value}\" is not numeric for matched entity in rule block starting on line {_ruleBlock.Line}");
+		return true;
 	}
 
 	/// <summary>
@@ -307,6 +438,6 @@ public class RuleAction(RuleBlock ruleBlock, RuleActionType Type, string? Key = 
 			return intValue;
 		}
 
-		throw new RuleBlockException($"Value \"{value}\" is somehow not numeric for math operation for matched entity in rule block starting on line {_ruleBlock.Line}");
+		throw new RuleBlockException($"Value \"{value}\" is not numeric (either math operation or entity value) for matched entity in rule block starting on line {_ruleBlock.Line}");
 	}
 }

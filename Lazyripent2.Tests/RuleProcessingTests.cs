@@ -774,6 +774,187 @@ public class RuleProcessingTests
 	}
 
 	[Test]
+	public void Basic_Match_MathOperations_Vector()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""target"" ""aaaa"" 
+			""target2"" ""aaaa"" 
+			""target3"" ""aaaa"" 
+			""target4"" ""aaaa"" 
+			""origin"" ""0 0 0""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		ruleFile.DeserializeFromMemory(@"
+		{
+			match classname test_target
+			add origin ""100 0 0""
+			replace target ""{origin}""
+			replace origin ""0 0 0""
+
+			sub origin ""0 100 100""
+			replace target2 ""{origin}""
+			replace origin ""10 10 10""
+
+			mult origin 2
+			replace target3 ""{origin}""
+
+			div origin 2
+			replace target4 ""{origin}""
+		}");
+
+		List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+		
+		Assert.Multiple(() =>
+		{
+			Assert.That(entities[0].GetValue("target"), Is.EqualTo("100 0 0"));
+			Assert.That(entities[0].GetValue("target2"), Is.EqualTo("0 -100 -100"));
+			Assert.That(entities[0].GetValue("target3"), Is.EqualTo("20 20 20"));
+			Assert.That(entities[0].GetValue("target4"), Is.EqualTo("10 10 10"));
+		});
+	}
+
+	[Test]
+	public void Basic_Match_MathOperations_Vector_Throws_VectorOpNumerical()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""origin"" ""0 0 0""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		Assert.Multiple(() =>
+		{	
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				add origin 100
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				sub origin 100
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+		});
+	}
+
+	[Test]
+	public void Basic_Match_MathOperations_Vector_Throws_VectorOpVector()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""origin"" ""0 0 0""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		Assert.Multiple(() =>
+		{	
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				mult origin ""100 100 100""
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				div origin ""100 100 100""
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+		});
+	}
+
+	[Test]
+	public void Basic_Match_MathOperations_Throws_NumericalOpVector()
+	{
+		MapFile mapFile = new();
+		mapFile.DeserializeFromMemory(@"
+		{
+			""classname"" ""test_target""
+			""health"" ""0""
+		}
+		");
+
+		RuleFile ruleFile = new();
+		Assert.Multiple(() =>
+		{	
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				add health ""100 100 100""
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				sub health ""100 100 100""
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				mult health ""100 100 100""
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+
+			ruleFile.DeserializeFromMemory(@"
+			{
+				match classname test_target
+				div health ""100 100 100""
+			}");
+
+			Assert.Throws<RuleBlockException>(() =>
+			{
+				List<Entity> entities = ruleFile.ApplyRules("", mapFile.GetEntities());
+			});
+		});
+	}
+
+	[Test]
 	public void Basic_Match_MathOperations_String()
 	{
 		MapFile mapFile = new();
