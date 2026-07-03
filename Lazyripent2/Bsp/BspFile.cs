@@ -8,7 +8,7 @@ public class BspFile : IParseableFile
 	private class BspLump
 	{
 		public Int32 Offset {get; set;} = 0;
-		public Int32 Length {get; set;} = 0;
+		public Int32 ByteLength {get; set;} = 0;
 		public byte[] Data {get; set;} = [];
 	}
 
@@ -49,13 +49,13 @@ public class BspFile : IParseableFile
 			_lumps[i] = new()
 			{
 				Offset = reader.ReadInt32(),
-				Length = reader.ReadInt32()
+				ByteLength = reader.ReadInt32()
 			};
 
-			if(_lumps[i].Length > ((LumpType)i).GetMaxLength())
+			if(_lumps[i].ByteLength > ((LumpType)i).GetMaxByteLength())
 			{
 				Console.ForegroundColor = ConsoleColor.Yellow;
-				Console.WriteLine($"unsupported bsp specification, lump \"{(LumpType)i}\" had a size ({_lumps[i].Length}) bigger than maximum expected ({((LumpType)i).GetMaxLength()})");
+				Console.WriteLine($"unsupported bsp specification, lump \"{(LumpType)i}\" had a size ({_lumps[i].ByteLength}) bigger than maximum expected ({((LumpType)i).GetMaxByteLength()})");
 				Console.ForegroundColor = ConsoleColor.White;
 				ExitCode.CheckWarningAsFatal();
 			}
@@ -66,7 +66,7 @@ public class BspFile : IParseableFile
 		{
 			reader.BaseStream.Seek(_lumps[i].Offset, SeekOrigin.Begin);
 
-			_lumps[i].Data = reader.ReadBytes(_lumps[i].Length);
+			_lumps[i].Data = reader.ReadBytes(_lumps[i].ByteLength);
 		}
 
 		_entities = [];
@@ -106,13 +106,13 @@ public class BspFile : IParseableFile
 			_lumps[i] = new()
 			{
 				Offset = reader.ReadInt32(),
-				Length = reader.ReadInt32()
+				ByteLength = reader.ReadInt32()
 			};
 
-			if(_lumps[i].Length > ((LumpType)i).GetMaxLength())
+			if(_lumps[i].ByteLength > ((LumpType)i).GetMaxByteLength())
 			{
 				Console.ForegroundColor = ConsoleColor.Yellow;
-				Console.WriteLine($"unsupported bsp specification, lump \"{(LumpType)i}\" had a size ({_lumps[i].Length}) bigger than maximum expected ({((LumpType)i).GetMaxLength()})");
+				Console.WriteLine($"unsupported bsp specification, lump \"{(LumpType)i}\" had a size ({_lumps[i].ByteLength}) bigger than maximum expected ({((LumpType)i).GetMaxByteLength()})");
 				Console.ForegroundColor = ConsoleColor.White;
 				ExitCode.CheckWarningAsFatal();
 			}
@@ -123,7 +123,7 @@ public class BspFile : IParseableFile
 		{
 			reader.BaseStream.Seek(_lumps[i].Offset, SeekOrigin.Begin);
 
-			_lumps[i].Data = reader.ReadBytes(_lumps[i].Length);
+			_lumps[i].Data = reader.ReadBytes(_lumps[i].ByteLength);
 		}
 
 		_entities = [];
@@ -161,7 +161,7 @@ public class BspFile : IParseableFile
 		for(int i = 0; i < (int)LumpType.TotalLumpTypes; i++)
 		{
 			writer.Write(_lumps[i].Offset);
-			writer.Write(_lumps[i].Length);
+			writer.Write(_lumps[i].ByteLength);
 		}
 
 		for(int i = 0; i < (int)LumpType.TotalLumpTypes; i++)
@@ -292,8 +292,8 @@ public class BspFile : IParseableFile
 		}
 
 		_lumps[(int)LumpType.Entities].Data = UTF8Encoding.UTF8.GetBytes(sb.ToString());
-		_lumps[(int)LumpType.Entities].Length = _lumps[(int)LumpType.Entities].Data.Length;
-		int length = _lumps[(int)LumpType.Entities].Length;
+		_lumps[(int)LumpType.Entities].ByteLength = _lumps[(int)LumpType.Entities].Data.Length;
+		int length = _lumps[(int)LumpType.Entities].ByteLength;
 
 		if(length > MAX_MAP_ENTSTRING)
 		{
@@ -320,7 +320,7 @@ public class BspFile : IParseableFile
 		for(int i = 0; i < (int)LumpType.TotalLumpTypes; i++)
 		{
 			_lumps[i].Offset = (int)currentOffset;
-			currentOffset += _lumps[i].Length;
+			currentOffset += _lumps[i].ByteLength;
 		}
 	}
 
